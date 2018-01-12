@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Parser {
     public static void main(String[] args) throws IOException {
@@ -24,21 +26,28 @@ public class Parser {
        for (Element e:numbers){
            listDate.add(Integer.parseInt(e.toString().substring(17,19)));
        }
-       for (Element e:temperatureMin){
-           listMaxTemp.add(e);
-       }
-       for (Element e:temperatureMax){
-           listMinTemp.add(e);
-       }
+        listMinTemp.addAll(temperatureMin);
+        listMaxTemp.addAll(temperatureMax);
        for (Element e :freeDay){
            listDate.add(Integer.parseInt(e.text()));
        }
         Collections.sort(listDate);
+        List<String> listMaxString = new ArrayList<>();
+        List<String> listMinString = new ArrayList<>();
+        Pattern pattern = Pattern.compile("[-+ ][0-9+].{0,1}°");
+        Matcher m = pattern.matcher(temperatureMax.text());
+        while (m.find()){
+            listMaxString.add( m.group());
+        }
+        Matcher m1 = pattern.matcher(temperatureMin.text());
+        while (m1.find()){
+            listMinString.add( m1.group());
+        }
+        Collections.sort(listDate);
         for (int i = 0; i < 7; i++) {
             System.out.println("temperature in "+listDate.get(i) +" max = "
-                    + temperatureMax.get(i).toString().substring(33,36)+
-             " min = "+ temperatureMin.get(i).toString().substring(32,36));
+                    + listMaxString.get(i)+
+                    " min = "+ listMinString.get(i));
         }
-
     }
 }
